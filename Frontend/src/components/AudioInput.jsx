@@ -270,11 +270,22 @@ const AudioInput = () => {
         formData.append('audio', audioFile);
       }
 
-      const result = await fetch('https://speech-emotion-recognizer-fiuq.onrender.com/predict', {
+      const API_URL = import.meta.env.MODE === 'development' 
+        ? 'http://localhost:5000/predict'
+        : 'https://speech-emotion-recognizer-fiuq.onrender.com/predict';
+
+      const result = await fetch(API_URL, {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
+        mode: 'cors',
       });
 
+      if (!result.ok) {
+        throw new Error(`HTTP error! status: ${result.status}`);
+      }
 
       const data = await result.json();
       if (data.error) {
