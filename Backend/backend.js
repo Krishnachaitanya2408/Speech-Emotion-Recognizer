@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static frontend files
-app.use(express.static(path.join(__dirname, '../frontend/build'))); // ← NEW
+app.use(express.static(path.join(__dirname, '../frontend/dist'))); // ← NEW
 
 // Configure Multer
 const storage = multer.diskStorage({
@@ -87,7 +87,7 @@ app.post('/predict', upload.single('audio'), async (req, res) => {
 
 // ← NEW: Fallback route for React Router
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 // Start server
