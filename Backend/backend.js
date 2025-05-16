@@ -16,11 +16,7 @@ if (!fs.existsSync(uploadDir)){
 }
 
 // Middleware
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://speech-emotion-recognizer-fiuq.onrender.com/'],
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Accept'],
-}));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -41,67 +37,52 @@ const upload = multer({
   storage,
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
-  },
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = ['audio/wav', 'audio/mpeg', 'audio/mp3', 'audio/webm'];
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type. Only WAV, MP3, and WebM files are allowed.'));
-    }
   }
-}).single('audio');
+});
 
 // Backend API routes
-app.post('/predict', (req, res) => {
-  upload(req, res, async function(err) {
-    if (err instanceof multer.MulterError) {
-      return res.status(400).json({ error: 'File upload error: ' + err.message });
-    } else if (err) {
-      return res.status(400).json({ error: err.message });
-    }
+app.post('/predict', upload.single('audio'), async (req, res) => {
+  if (!req.file) {
+    console.error("Error: No file was uploaded");
+    return res.status(400).send({ error: 'No audio file provided' });
+  }
 
-    if (!req.file) {
-      return res.status(400).json({ error: 'No audio file provided' });
-    }
+  try {
+    const audioPath = req.file.path;
+    const pythonScriptPath = path.join(__dirname, 'predict.py');
 
-    try {
-      const audioPath = req.file.path;
-      const pythonScriptPath = path.join(__dirname, 'predict.py');
+    const pythonProcess = spawn('python', [pythonScriptPath, audioPath]);
 
-      const pythonProcess = spawn('python', [pythonScriptPath, audioPath]);
+    let result = '';
+    let error = '';
 
-      let result = '';
-      let error = '';
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
 
-      pythonProcess.stdout.on('data', (data) => {
-        result += data.toString();
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+      fs.unlink(audioPath, (err) => {
+        if (err) console.error('Error deleting file:', err);
       });
 
-      pythonProcess.stderr.on('data', (data) => {
-        error += data.toString();
-      });
-
-      pythonProcess.on('close', (code) => {
-        fs.unlink(audioPath, (err) => {
-          if (err) console.error('Error deleting file:', err);
-        });
-
-        if (code === 0) {
-          try {
-            const prediction = JSON.parse(result);
-            res.send({ emotion: prediction.emotion });
-          } catch (err) {
-            res.status(500).send({ error: 'Error parsing prediction result' });
-          }
-        } else {
-          res.status(500).send({ error: `Error processing prediction: ${error}` });
+      if (code === 0) {
+        try {
+          const prediction = JSON.parse(result);
+          res.send({ emotion: prediction.emotion });
+        } catch (err) {
+          res.status(500).send({ error: 'Error parsing prediction result' });
         }
-      });
-    } catch (err) {
-      res.status(500).send({ error: 'Error processing file' });
-    }
-  });
+      } else {
+        res.status(500).send({ error: `Error processing prediction: ${error}` });
+      }
+    });
+  } catch (err) {
+    res.status(500).send({ error: 'Error processing file' });
+  }
 });
 
 // ← NEW: Fallback route for React Router
