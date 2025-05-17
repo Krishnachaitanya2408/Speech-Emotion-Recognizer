@@ -270,7 +270,7 @@ const AudioInput = () => {
         formData.append('audio', audioFile);
       }
 
-      const result = await fetch('http://localhost:5000/predict', {
+      const result = await fetch('https://speech-emotion-recognizer-dy5n.onrender.com/predict', {
         method: 'POST',
         body: formData
       });
