@@ -51,7 +51,7 @@ app.post('/predict', upload.single('audio'), async (req, res) => {
     const audioPath = req.file.path;
     const pythonScriptPath = path.join(__dirname, 'predict.py');
 
-    const pythonProcess = spawn('python', [pythonScriptPath, audioPath]);
+    const pythonProcess = spawn('python3', [pythonScriptPath, audioPath]);
 
     let result = '';
     let error = '';
