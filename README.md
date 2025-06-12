@@ -58,7 +58,7 @@ npm install
 
 1. **Clone & Setup**
 ```bash
-git clone [<repository-url>](https://github.com/Krishnachaitanya2408/Speech-Emotion-Recognizer.git)
+git clone https://github.com/Krishnachaitanya2408/Speech-Emotion-Recognizer.git
 cd speech-emotion-recognizer
 ```
 
