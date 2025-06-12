@@ -1,45 +1,112 @@
-# Speech Emotion Recognition
+# 🎙️ Speech Emotion Recognition System
 
-This project implements a deep learning model to recognize emotions from speech using audio processing techniques.
+An AI-powered web application that analyzes human emotions from speech using deep learning. Upload audio files or record your voice in real-time to discover the emotional content of speech.
 
-## Features
+## ✨ Key Features
 
-- Speech emotion recognition using deep learning
-- Audio preprocessing using librosa
-- Support for multiple audio formats
-- Real-time emotion detection capabilities
+- 🎤 Real-time voice recording with duration controls (3-13 seconds)
+- 📁 Support for multiple audio formats (WAV, MP3, WebM)
+- 🎯 Accurate emotion prediction for 6 emotional states
+- 😊 Visual feedback with emotion-specific emojis
+- 🔄 Instant processing and results
+- 📱 Responsive design for all devices
 
-## Setup
+## 🧠 How It Works
 
-1. Clone the repository
+The system processes speech through multiple stages:
+1. Audio capture/upload
+2. Feature extraction using Librosa
+3. Emotion classification via PyTorch model
+4. Real-time feedback to user interface
+
+## 🏗️ Technical Architecture
+
+### 🎨 Frontend
+- **Framework**: React.js + Vite
+- **Key Features**:
+  - Modern Audio APIs for recording
+  - Real-time audio visualization
+  - Drag-and-drop file upload
+  - Responsive emotion display
+  - Progress indicators
+
+### ⚙️ Backend
+- **Server**: Node.js + Express
+- **ML Processing**: Python + PyTorch
+- **Features**:
+  - Audio feature extraction with Librosa
+  - PyTorch-based emotion classification
+  - Audio file handling with Multer
+  - CORS-enabled API endpoints
+  - Real-time processing
+  - Error handling & validation
+
+## 🛠️ Setup Guide
+
+### Prerequisites
 ```bash
-git clone https://github.com/yourusername/emotion-recognizer.git
-cd emotion-recognizer
+# Node.js v14+
+# Python v3.7+
+# Required Python packages
+pip install torch torchaudio librosa numpy
+
+# Required Node packages
+npm install
 ```
 
-2. Create a virtual environment (recommended)
+### Quick Start
+
+1. **Clone & Setup**
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+git clone <repository-url>
+cd speech-emotion-recognizer
 ```
 
-3. Install dependencies
+2. **Frontend Development**
 ```bash
-pip install -r requirements.txt
+cd Frontend
+npm install
+npm run dev
+# Access at http://localhost:5173
 ```
 
-## Usage
-
-1. Prepare your audio file in a supported format (WAV, MP3)
-2. Run the emotion recognition script:
+3. **Backend Server**
 ```bash
-python emotion_recognizer.py --input path/to/audio/file.wav
+cd Backend
+npm install
+node backend.js
+# Server runs on http://localhost:5000
 ```
 
-## Model Architecture
+## 🎯 API Endpoints
 
-The system uses deep learning to process audio features extracted using librosa, including:
-- MFCC (Mel-frequency cepstral coefficients)
-- Spectral features
-- Temporal features
+### POST `/predict`
+- **Purpose**: Emotion analysis from audio
+- **Accepts**: Audio file upload (WAV, MP3, WebM)
+- **Returns**: Predicted emotion
+- **Limits**: 
+  - Max file size: 10MB
+  - Duration: 3-13 seconds
+
+## 🔍 Supported Emotions
+
+- 😊 Happy
+- 😐 Neutral
+- 😢 Sad
+- 😠 Angry
+- 😨 Fear
+- 🤢 Disgust
+
+## 🚀 Development
+
+```bash
+# Start frontend development server
+npm run dev
+
+# Start backend server
+node backend.js
+
+# Build for production
+npm run build
+```
 
